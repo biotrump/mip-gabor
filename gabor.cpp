@@ -13,7 +13,6 @@ using namespace std;
 using namespace cv;
 #include "gabor.hpp"
 
-//void Process(Mat src_f, int kernel_size);
 void Process(int , void *);
 cv::Mat mkKernel(int ks, double sig, double th, double lm, double ps);
 

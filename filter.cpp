@@ -154,11 +154,14 @@ void Process(int pos, void *userdata)
 	}
     cv::Mat kernel = mkKernel(kernel_size, sig, th, lm, ps);
 	cv::Mat wmat;
-    cv::filter2D(src_f, dest, CV_32F, kernel);//0-1.0
-	//anisotropic smooth filter
-	dest.convertTo(wmat, CV_8UC1, 255.0);//0-1.0- > 0-255
+    cv::filter2D(src_f, dest, CV_32F, kernel);//pixel value operates in [0.0-1.0]
+	//convert from [0.0-1.0]- > [0-255], because itk reads 8 bit grey image
+	dest.convertTo(wmat, CV_8UC1, 255.0);//
+
+	//anisotropic smooth filter, input image is 8bit grey
 	cvitk_AnisotropicDiffusionFilter(wmat, dest, 2);
 	//cvitk_mediaFilter(wmat, dest);
+
 	if(tracker)
 		cv::imshow(tracker->winname, dest);
 	else

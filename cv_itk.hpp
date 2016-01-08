@@ -8,10 +8,23 @@
 #ifndef _H_CV_ITK_H
 #define	_H_CV_ITK_H
 
+#include "itkImage.h"
+#include "itkImageFileReader.h"
+#include "itkImageFileWriter.h"
+#include "itkConvolutionImageFilter.h"
+
+#include "itkGaborImageSource.h"
+#include "itkGaussianInterpolateImageFunction.h"
+#include "itkImageRegionIterator.h"
+#include "itkTimeProbe.h"
+
+
+
 #include "itkGradientAnisotropicDiffusionImageFilter.h"
 #include "itkCurvatureAnisotropicDiffusionImageFilter.h"
 
 int cvitk_mediaFilter(cv::Mat &inputImage, cv::Mat &resultImage);
+int cvitk_GaborImageSource2D(cv::Mat &inputImage, cv::Mat &kernelImage, cv::Mat &resultImage);
 int cvitk_AnisotropicDiffusionFilter(cv::Mat &inputImage, cv::Mat &resultImage, 
 			int numberOfIterations=5, const double & conductance=1.0, float timeStep=0.25);
 int cvitk_CurvatureAnisotropicDiffusionFilter(cv::Mat &inputImage, cv::Mat &resultImage, 

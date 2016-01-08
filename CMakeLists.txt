@@ -32,8 +32,8 @@ endif()
 message("*** ITK_LIBS:${ITK_LIBS}")
 message("*** ITK_LIBRARIES:${ITK_LIBRARIES}")
 #-----------------------------------------------------
-#export OPENCV_OUT=opencv/build/2.4.x-static/x86_64
 #export OPENCV_OUT=/ssd/opencv/build_2.4.12.2/debug
+#export /home/thomas/build/bcv-x86.gl/out/opencv/2.4.x-static/x86_64
 #ITK 4.8.x is not compatible to opencv 3.x : cv::MAT
 #export OPENCV_OUT=/ssd/opencv/build_3.0.0/x86_64_debug
 #export OPENCV_OUT=/ssd/opencv-3.1.0/build/debug-x86-64
@@ -58,6 +58,11 @@ if(OpenCV_FOUND)
 endif()
 #---------------------------------------------------------
 # Widgets finds its own dependencies (QtGui and QtCore).
+# Find includes in corresponding build directories
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+# Instruct CMake to run moc automatically when needed.
+set(CMAKE_AUTOMOC ON)
+
 find_package(Qt5Widgets REQUIRED)
 #  find_package(Qt5Declarative)
 
@@ -91,11 +96,11 @@ target_link_libraries( gabor
 			${ITK_LIBRARIES} 
 			${OpenCV_LIBS} )
 
-qt5_use_modules(gabor 
-				Widgets  
-				OpenGL 
-				Test 
-				Concurrent)
+#qt5_use_modules(gabor
+#				Widgets  
+#				OpenGL 
+#				Test 
+#				Concurrent)
 #---------------------------------------------------------	
 add_executable( retina 
 			retina.cpp
@@ -112,3 +117,19 @@ qt5_use_modules(gabor
 				OpenGL 
 				Test 
 				Concurrent)
+#---------------------------------------------------------	
+add_executable( gabor_src 
+			gabor_src.cpp
+			cv_itk_filters.cpp
+			)
+
+target_link_libraries( gabor_src 
+			${ITK_LIBRARIES} 
+			${OpenCV_LIBS}
+			)
+
+#qt5_use_modules(gabor_src 
+#				Widgets  
+#				OpenGL 
+#				Test 
+#				Concurrent)
