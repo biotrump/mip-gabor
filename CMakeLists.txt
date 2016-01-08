@@ -9,8 +9,34 @@ project( GABOR )
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${GABOR_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${GABOR_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${GABOR_BINARY_DIR}/lib)
-
-#OPENCV_OUT=opencv/build/2.4.x-static/x86_64
+#-----------------------------------------------------
+#export VTK_DIR=/home/thomas/MIP/VTK/build/debug.6.3
+#export ITK_OUT=/home/thomas/MIP/ITK/build/debug.4.8.1
+set(ITK_DIR $ENV{ITK_OUT})
+message("++++ITK_DIR:${ITK_DIR}")
+FIND_PACKAGE( ITK REQUIRED)
+if(ITK_FOUND)
+	message("found")
+	message( "ITK_INCLUDE_DIRS:${ITK_INCLUDE_DIRS}" )
+	message( "ITK_INCLUDES:${ITK_INCLUDES}")
+	message( "ITK_LIBRARIES:${ITK_LIBRARIES}")
+	message( "ITK_LIBS:${ITK_LIBS}")
+	message( "ITK_DEFINITIONS:${ITK_DEFINITIONS}")
+else()
+	message(FATAL_ERROR "ITK not foud")
+endif()
+if(ITK_FOUND)
+#  include(${USE_ITK_FILE})
+  include_directories(${ITK_INCLUDE_DIRS})
+endif()
+message("*** ITK_LIBS:${ITK_LIBS}")
+message("*** ITK_LIBRARIES:${ITK_LIBRARIES}")
+#-----------------------------------------------------
+#export OPENCV_OUT=opencv/build/2.4.x-static/x86_64
+#export OPENCV_OUT=/ssd/opencv/build_2.4.12.2/debug
+#ITK 4.8.x is not compatible to opencv 3.x : cv::MAT
+#export OPENCV_OUT=/ssd/opencv/build_3.0.0/x86_64_debug
+#export OPENCV_OUT=/ssd/opencv-3.1.0/build/debug-x86-64
 set(OpenCV_DIR $ENV{OPENCV_OUT})
 message("++++OpenCV_DIR:${OpenCV_DIR}")
 FIND_PACKAGE( OpenCV REQUIRED)
@@ -24,9 +50,12 @@ if(OpenCV_FOUND)
 else()
 	message(FATAL_ERROR "openCV not foud")
 endif()
-
+#include_directories( ${OpenCV_INCLUDE_DIRS} )
 message("*** OpenCV_LIBS:${OpenCV_LIBS}")
 message("*** OpenCV_LIBRARIES:${OpenCV_LIBRARIES}")
+if(OpenCV_FOUND)
+  include_directories(${OpenCV_INCLUDE_DIRS})
+endif()
 #---------------------------------------------------------
 # Widgets finds its own dependencies (QtGui and QtCore).
 find_package(Qt5Widgets REQUIRED)
@@ -49,7 +78,37 @@ if(OPENMP_FOUND)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
 #---------------------------------------------------------	
-include_directories( ${OpenCV_INCLUDE_DIRS} )
 add_executable( DisplayImage DisplayImage.cpp )
 target_link_libraries( DisplayImage ${OpenCV_LIBS} )
 qt5_use_modules(DisplayImage Widgets  OpenGL Test Concurrent)
+#---------------------------------------------------------	
+add_executable( gabor 
+			gabor.cpp
+			cv_filter.cpp
+			)
+
+target_link_libraries( gabor 
+			${ITK_LIBRARIES} 
+			${OpenCV_LIBS} )
+
+qt5_use_modules(gabor 
+				Widgets  
+				OpenGL 
+				Test 
+				Concurrent)
+#---------------------------------------------------------	
+add_executable( retina 
+			retina.cpp
+			filter.cpp
+			cv_itk_filters.cpp
+			)
+
+target_link_libraries( retina 
+			${ITK_LIBRARIES} 
+			${OpenCV_LIBS} )
+
+qt5_use_modules(gabor 
+				Widgets  
+				OpenGL 
+				Test 
+				Concurrent)
