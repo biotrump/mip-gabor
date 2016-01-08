@@ -169,7 +169,111 @@ int cvitk_GaborImageSource2D(cv::Mat &inputImage, cv::Mat &kernelImage, cv::Mat 
 	return EXIT_SUCCESS;
 }
 
+//int ks=21, float sig=5.0, float the=0.0, float lm=50.0, float ps=90.0)
+int cvitk_GaborImageFilter2D(cv::Mat &inputImage, cv::Mat &kernelImage, cv::Mat &resultImage,
+	int ks, float sig, float the, float lm, float ps)
+{
+    if (! (ks & 0x1) )	//even to odd
+    {
+        ks+=1;
+    }
+	int hks = (ks-1)/2;
+	printf("ks=%d, hks=%d\n", ks, hks);
+    float theta = the*CV_PI/180;
+    float psi = ps*CV_PI/180;
+    float del = 2.0/(ks-1);
+    float lmbd = lm;
+    float iso_sigma = sig/(float)ks;
+	printf("iso_sigma=%f, sig=%f, ks=%d\n", iso_sigma, sig, ks);
+    float x_theta;
+    float y_theta;
 
+	typedef float PixelType;//4 bytes float
+	typedef float OutputPixelType;
+	typedef float InputPixelType;
+	const unsigned int ImageDimension = 2;
+	typedef itk::Image< InputPixelType,  ImageDimension >   InputImageType;
+	typedef itk::Image< OutputPixelType,  ImageDimension >   OutputImageType;
+	typedef itk::Image<PixelType, ImageDimension> ImageType;
+	typedef itk::OpenCVImageBridge                   BridgeType;
+	// Instantiate the filter
+	typedef itk::GaborImageSource<ImageType> GaborSourceType;
+	GaborSourceType::Pointer gaborImage = GaborSourceType::New();
+	gaborImage->Print(std::cout);
+
+	//convert opencv image to itk image
+	InputImageType::Pointer itkImage =
+	BridgeType::CVMatToITKImage< InputImageType >( inputImage );
+	
+	GaborSourceType::ArrayType sigma;
+	sigma[0] = 2.0;
+	sigma[1] = 2.0;//5.0;
+	//gaussian is isotropic
+	//sigma[0] = iso_sigma;
+	//sigma[1] = iso_sigma;
+	
+	ImageType::SizeType size;
+	size.Fill( hks );//N*N=256*256
+
+	gaborImage->SetSize( size );
+
+	gaborImage->SetSigma( 2.0 /*sigma*/ );
+	gaborImage->SetFrequency( 1.0/lmbd /*0.1*/ );
+	gaborImage->SetCalculateImaginaryPart( false);
+
+	try
+	{
+		gaborImage->Update();
+		gaborImage->Print(std::cout);
+	}
+	catch (itk::ExceptionObject & err)
+	{
+		std::cout << "ExceptionObject caught !" << std::endl;
+		std::cout << err << std::endl;
+		return EXIT_FAILURE;
+	}
+/*
+	typedef itk::ImageFileWriter<ImageType> WriterType;
+	WriterType::Pointer writer = WriterType::New();
+	writer->SetFileName( argv[1] );
+	writer->SetInput( gaborImage->GetOutput() );
+	writer->Update();
+*/
+	//get the output of itk filter
+	//convert to opencv image, pixel value is float,32bits,[0.0-1.0]
+	kernelImage =
+	BridgeType::ITKImageToCVMat< ImageType >( gaborImage->GetOutput() );
+
+    /**
+     * Convolve the input image with the resampled gabor image kernel.
+     */
+    typedef itk::ConvolutionImageFilter<ImageType> ConvolutionFilterType;
+    typename ConvolutionFilterType::Pointer convoluter
+      = ConvolutionFilterType::New();
+    convoluter->SetInput( itkImage );
+#if ITK_VERSION_MAJOR >= 4
+	convoluter->SetKernelImage(gaborImage->GetOutput());
+#else
+	convoluter->SetImageKernelInput(gaborImage->GetOutput());
+#endif
+    convoluter->NormalizeOn();
+	try
+	{
+		convoluter->Update();
+	}
+	catch (itk::ExceptionObject & err)
+	{
+		std::cout << "ExceptionObject caught !" << std::endl;
+		std::cout << err << std::endl;
+		return EXIT_FAILURE;
+	}
+
+	//convert to opencv image
+	resultImage =
+	BridgeType::ITKImageToCVMat< OutputImageType >( convoluter->GetOutput() );
+	
+	return EXIT_SUCCESS;
+}
 
 /** 2.7.3 Edge Preserving Smoothing
  * Introduction to Anisotropic Diffusion

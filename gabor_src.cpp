@@ -32,7 +32,8 @@ int main(int argc, char** argv )
 	
     cv::Mat kernelImage;
 	cv::Mat resultImage;
-	cvitk_GaborImageSource2D(rgb[1] /*image_f*/, kernelImage, resultImage);
+	//cvitk_GaborImageSource2D(rgb[1] /*image_f*/, kernelImage, resultImage);
+	cvitk_GaborImageFilter2D(rgb[1] , kernelImage, resultImage);
 
 	cv::namedWindow("inputimage", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO |CV_GUI_EXPANDED );
 	cv::imshow("inputimage", image);

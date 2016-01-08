@@ -175,3 +175,48 @@ void Process(int pos, void *userdata)
     cv::pow(dest, 2.0, mag);
     cv::imshow(std::string("Mag ")+tracker->winname, mag);
 }
+
+/*
+ * by itk filter
+ */
+void Process_itk(int pos, void *userdata)
+{
+	tracker_data *tracker = (tracker_data *)userdata;
+//	assert(tracker);
+    double sig = pos_sigma;
+    double lm = 0.5+pos_lm/100.0;
+    double th = pos_th;
+    double ps = pos_psi;
+    if (!kernel_size%2)
+    {
+        kernel_size+=1;
+    }
+//    cv::Mat src_f;
+//    if(tracker){
+//		src_f=tracker->src_f;
+//		printf("%s:offset %d\n",tracker->trackername.c_str(), pos);
+//	}else{
+//
+//	}
+
+//	cv::Mat kernel = mkKernel(kernel_size, sig, th, lm, ps);
+//	cv::Mat wmat;
+//  cv::filter2D(src_f, dest, CV_32F, kernel);//pixel value operates in [0.0-1.0]
+	//convert from [0.0-1.0]- > [0-255], because itk reads 8 bit grey image
+	//dest.convertTo(wmat, CV_8UC1, 255.0);//
+
+	//anisotropic smooth filter, input image is 8bit grey
+	//cvitk_AnisotropicDiffusionFilter(wmat, dest, 2);
+	//cvitk_mediaFilter(wmat, dest);
+
+	//cv::imshow(tracker->winname, dest);
+	
+/*    cv::Mat Lkernel(kernel_size*20, kernel_size*20, CV_32F);
+    cv::resize(kernel, Lkernel, Lkernel.size());
+    Lkernel /= 2.;
+    Lkernel += 0.5;*/
+    //cv::imshow(std::string("Kernel ")+tracker->winname, Lkernel);
+/*    cv::Mat mag;
+    cv::pow(dest, 2.0, mag);*/
+    //cv::imshow(std::string("Mag ")+tracker->winname, mag);
+}
