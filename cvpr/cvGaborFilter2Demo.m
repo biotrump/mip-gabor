@@ -1,6 +1,7 @@
 % cvGaborFilter2Demo - Demo of cvGaborFilter2
 function cvGaborFilter2Demo
-I = imread('texture.20.png');
+%I = imread('texture.20.png');
+I = imread('zebra-256x256-8.png');
 figure; imshow(I);
 N = size(I, 1);
 gamma = 1; %Lambda = [1 2 4 8 16 32 64];
