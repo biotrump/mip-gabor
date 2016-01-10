@@ -32,12 +32,12 @@ endif()
 message("*** ITK_LIBS:${ITK_LIBS}")
 message("*** ITK_LIBRARIES:${ITK_LIBRARIES}")
 #-----------------------------------------------------
-#export OPENCV_OUT=/ssd/opencv/build_2.4.12.2/debug
-#export /home/thomas/build/bcv-x86.gl/out/opencv/2.4.x-static/x86_64
+#export OpenCV_DIR=/ssd/opencv/build_2.4.12.2/debug
+#export OpenCV_DIR=/home/thomas/build/bcv-x86.gl/out/opencv/2.4.x-static/x86_64
 #ITK 4.8.x is not compatible to opencv 3.x : cv::MAT
-#export OPENCV_OUT=/ssd/opencv/build_3.0.0/x86_64_debug
-#export OPENCV_OUT=/ssd/opencv-3.1.0/build/debug-x86-64
-set(OpenCV_DIR $ENV{OPENCV_OUT})
+#export OpenCV_DIR=/ssd/opencv/build_3.0.0/x86_64_debug
+#export OpenCV_DIR=/ssd/opencv-3.1.0/build/debug-x86-64
+set(OpenCV_DIR $ENV{OpenCV_DIR})
 message("++++OpenCV_DIR:${OpenCV_DIR}")
 FIND_PACKAGE( OpenCV REQUIRED)
 if(OpenCV_FOUND)
@@ -118,17 +118,17 @@ qt5_use_modules(gabor
 				Test 
 				Concurrent)
 #---------------------------------------------------------	
-add_executable( gabor_src 
-			gabor_src.cpp
+add_executable( gabor_filter 
+			gabor_filter.cpp
 			cv_itk_filters.cpp
 			)
 
-target_link_libraries( gabor_src 
+target_link_libraries( gabor_filter 
 			${ITK_LIBRARIES} 
 			${OpenCV_LIBS}
 			)
 
-#qt5_use_modules(gabor_src 
+#qt5_use_modules(gabor_filter 
 #				Widgets  
 #				OpenGL 
 #				Test 

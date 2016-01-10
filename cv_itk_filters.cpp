@@ -207,7 +207,7 @@ int cvitk_GaborImageFilter2D(cv::Mat &inputImage, cv::Mat &kernelImage, cv::Mat 
 	
 	GaborSourceType::ArrayType sigma;
 	sigma[0] = 2.0;
-	sigma[1] = 2.0;//5.0;
+	sigma[1] = 5.0;
 	//gaussian is isotropic
 	//sigma[0] = iso_sigma;
 	//sigma[1] = iso_sigma;
@@ -217,7 +217,7 @@ int cvitk_GaborImageFilter2D(cv::Mat &inputImage, cv::Mat &kernelImage, cv::Mat 
 
 	gaborImage->SetSize( size );
 
-	gaborImage->SetSigma( 2.0 /*sigma*/ );
+	gaborImage->SetSigma( sigma );
 	gaborImage->SetFrequency( 1.0/lmbd /*0.1*/ );
 	gaborImage->SetCalculateImaginaryPart( false);
 
