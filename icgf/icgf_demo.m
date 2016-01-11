@@ -1,20 +1,26 @@
 %pkg install image-2.4.1.tar.gz
-pkg load image;
 %CGF= Zr + Zi
 function icgf_demo
+%pkg load image;
 Img = imread('21_training.tif');
 figure('name', 'origin'); imshow(Img);
 red = Img(:,:,1);
-figure('name', 'red'); imshow(red);
+%figure('name', 'red'); imshow(red);
 green = Img(:,:,2);
 figure('name', 'green'); imshow(green);
 blue = Img(:,:,3);
-figure('name', 'blue'); imshow(blue);
+%figure('name', 'blue'); imshow(blue);
 J = imread('retina_512x512x8.png');
 figure('name', 'grey512x512'); imshow(J);
-%I = histeq(J);
-I=J;
+I = histeq(J, 256);
+%I=J;
 figure('name', 'histeq'); imshow(I);
+
+[level, sep] = graythresh(I);
+printf("I:level=%f, sep=%f\n", level, sep);
+
+BW = im2bw(J, 0.5);
+figure('name', 'JBW'); imshow(BW);
 
 N = size(I, 1);
 %N=32;
@@ -46,18 +52,20 @@ printf("GO:min=%f, Max=%f\n", min(min(GO)), max(max(GO)) );
 P = uint8(cvuNormalize(GO, [0, 255])); % normalize to plot
 figure('name', 'P=GO'); imshow(P);
 
-ICGF = cvuNormalize(ICGF, [0, 255]); % normalize to plot
-figure('name', 'ICGF'); imshow(uint8(ICGF));
+%ICGF = cvuNormalize(ICGF, [0, 255]); % normalize to plot
+%figure('name', 'ICGF'); imshow(uint8(ICGF));
 
 %I-ICGF
 %NI = uint8(cvuNormalize(I, [0, 255])); % normalize to plot
 %figure('name', 'NI'); imshow(NI);
 
-Rp = I - P.*0.6;
+Rp = I - P;
 figure('name', 'Rp'); imshow(Rp);
 
-%Rp = cvuNormalize(Rp, [0, 255]); % normalize to plot
-%figure('name', 'nRp'); imshow(Rp);
+% normalize R' to R[0-255]
+% R = (R'-min(R')) * 255 / (max(R') - min(R') )
+nRp = cvuNormalize(Rp, [0, 255]); % normalize to plot
+figure('name', 'nRp'); imshow(nRp);
 
 %"Perona & Malik" : anisotropic diffuse
 %smooth but edge preserves
@@ -73,9 +81,16 @@ K=20;
 lambda=0.25;
 g = @(d) exp(-(d./50).^2);
 aRp = imsmooth(Rp, "p&m", K, lambda,g);
+%aRp = uint8(cvuNormalize(aRp, [0, 255])); % normalize to plot
 figure('name', 'aRp'); imshow(aRp);
-%Rp = uint8(cvuNormalize(Rp, [0, 255])); % normalize to plot
 %figure('name', 'NRp'); imshow(Rp);
 figure('name', 'histeq(aRp)'); imshow(histeq(aRp));
 
+%otsu threshold
+[level, sep] = graythresh(aRp, "Otsu");
+%[level, sep] = graythresh(Rp, "Otsu");
+printf("level=%f, sep=%f\n", level, sep);
+
+BW = im2bw(aRp, level);
+figure('name', 'BW'); imshow(BW);
 end
