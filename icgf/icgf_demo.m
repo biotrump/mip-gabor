@@ -78,18 +78,19 @@ printf("Rp:min=%f, max=%f\n", min(min(Rp)), max(max(Rp)) ) ;
 % R = (R'-min(R')) * 255 / (max(R') - min(R') )
 nRp = uint8(cvuNormalize(Rp, [0, 255])); % normalize to plot
 figure('name', 'nRp'); imshow(nRp);
+imwrite(nRp, 'nRp.png');
 printf("R=nRp:min=%f, max=%f\n", min(min(nRp)), max(max(nRp)) ) ;
 R=nRp;
 figure('name', 'histeq(nRp)'); imshow(histeq(nRp));
 
 %"Perona & Malik" : anisotropic diffuse
 %smooth but edge preserves
-%The function g in the update equation determines the type of the result. 
+%The function g in the update equation determines the type of the result.
 %By default g(d) = exp(-(d./K).^2) where K = 25. iteration
 %This choice gives privileges to high-contrast edges over low-contrast ones.
 % K is the sensitivity to stop smooth, if K is small, thin edge is kept.
 K=2;
-%An alternative is to set g(d) = 1./(1 + (d./K).^2), 
+%An alternative is to set g(d) = 1./(1 + (d./K).^2),
 %which gives privileges to wide regions over smaller ones
 
 %I += lambda * (g(dN).*dN + g(dS).*dS + g(dE).*dE + g(dW).*dW) where lambda=[0-0.25]
@@ -101,6 +102,7 @@ repeats=50;
 aR = imsmooth(R, "p&m", repeats, lambda, g);
 printf("aR:min=%f, max=%f\n", min(min(aR)), max(max(aR)) ) ;
 figure('name', 'aR'); imshow(aR);
+imwrite(aR, 'aR.png');
 figure('name', 'histeq(aR)'); imshow(histeq(aR));
 
 %otsu threshold
