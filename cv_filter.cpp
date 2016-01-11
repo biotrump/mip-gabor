@@ -13,6 +13,7 @@ using namespace std;
 using namespace cv;
 
 #include "gabor.hpp"
+#include "cv_itk.hpp"
 
 #if 0
 /* Greylevel input image
@@ -123,6 +124,7 @@ cv::Mat mkKernel(int ks, double sig, double th, double lm, double ps)
     return kernel;
 }
 
+int g_fansiotropic=0;
 int kernel_size=21;
 int pos_sigma= 5;
 int pos_lm = 50;
@@ -152,6 +154,13 @@ void Process(int pos, void *userdata)
 	}
     cv::Mat kernel = mkKernel(kernel_size, sig, th, lm, ps);
     cv::filter2D(src_f, dest, CV_32F, kernel);
+	if(g_fansiotropic){
+		//convert from [0.0-1.0]- > [0-255], because itk reads 8 bit grey image
+		cv::Mat wmat;
+		dest.convertTo(wmat, CV_8UC1, 255.0);//
+		//anisotropic smooth filter, input image is 8bit grey
+		cvitk_AnisotropicDiffusionFilter(wmat, dest, 2);
+	}
 	if(tracker)
 		cv::imshow(tracker->winname, dest);
 	else

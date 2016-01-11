@@ -10,6 +10,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${GABOR_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${GABOR_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${GABOR_BINARY_DIR}/lib)
 #-----------------------------------------------------
+#ITK to OpenCV bridge does not support QT5 very well in cmake,
+#so opencv should be prebuilt "no qt5" to build ITK successfully.
+#But the openCV app can still use qt5 and bridges to ITK.
+#
 #export VTK_DIR=/home/thomas/MIP/VTK/build/debug.6.3
 #export ITK_OUT=/home/thomas/MIP/ITK/build/debug.4.8.1
 set(ITK_DIR $ENV{ITK_OUT})
@@ -89,6 +93,7 @@ qt5_use_modules(DisplayImage Widgets  OpenGL Test Concurrent)
 #---------------------------------------------------------	
 add_executable( gabor 
 			gabor.cpp
+			cv_itk_filters.cpp
 			cv_filter.cpp
 			)
 

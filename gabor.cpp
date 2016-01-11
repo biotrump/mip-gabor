@@ -16,6 +16,7 @@ using namespace cv;
 void Process(int , void *);
 cv::Mat mkKernel(int ks, double sig, double th, double lm, double ps);
 
+extern int g_fansiotropic;
 extern int kernel_size;
 extern int pos_sigma;
 extern int pos_lm;
@@ -23,6 +24,12 @@ extern int pos_th;
 extern int pos_psi;
 extern cv::Mat src_f;
 extern cv::Mat dest;
+
+void callbackButton(int state, void *userdata)
+{
+	if(state == 1) g_fansiotropic=1;
+	else g_fansiotropic=0;
+}
 
 int main(int argc, char** argv )
 {
@@ -57,9 +64,8 @@ int main(int argc, char** argv )
 	for(int i = 0; i < 3; i++){
 		rgb[i].convertTo(tracker[i].src_f, CV_32F, 1.0/255, 0);//green channel
 	}
-	
+	cv::createButton("anisotropic",callbackButton,NULL , CV_CHECKBOX, 1);
 	//process(0, (void *)(tracker+1) );//green channel
-	
 	for(int i = 0; i < 3; i++){
 		//int kernel_size=21;
 		cv::namedWindow(tracker[i].winname, WINDOW_AUTOSIZE);
