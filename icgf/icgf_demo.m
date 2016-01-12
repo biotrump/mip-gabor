@@ -26,15 +26,26 @@ printf("I:level=%f, sep=%f\n", level, sep);
 BW = im2bw(I, level);
 figure('name', 'hst BW'); imshow(BW);
 
-N = size(I, 1);
-N=128;
+%N = size(I, 1);
+%N=64 is best fit to the paper.
+N=64;
+%sigma bigger, gaussian bigger, more blur
 %sigma = 4;
-%F = 64/N;%F={4,8,16,32,64,128,...N/4}/N
-F = 4/N;%F={4,8,16,32,64,128,...N/4}/N
+%higher frequency makes higher clarity of P, ICGF
+%F = 512/N;%F={4,8,16,32,64,128,...N/4}/N
+F = 128/N;%F={4,8,16,32,64,128,...N/4}/N
+%F = 4/N;%F={4,8,16,32,64,128,...N/4}/N
 sigma=3.7;
 %F=2.1;
 ticks = [-N/2:1:(N-1)/2];
 %ticks = [0:1:N];
+%%%%%%%%%%%%%%%
+%good ICGF plot display
+%N=128;
+%F = 32/N;%F={4,8,16,32,64,128,...N/4}/N
+%sigma=2;
+%ticks = [-N/2:0.5:(N-1)/2];
+%%%%%%%%%%%%%%%%%%
 [x, y] = meshgrid(ticks, ticks);
 
 figure('name','isotropic gauss2D');
@@ -70,7 +81,7 @@ printf("nP:min=%f, Max=%f\n", min(min(nP)), max(max(nP)) );
 
 % Rp is temporal variable [-255-+255]
 %Rp = single(I) - single(P);
-Rp = single(I) - P;
+Rp = double(I) - P;
 %figure('name', 'Rp'); imshow(Rp);
 printf("Rp:min=%f, max=%f\n", min(min(Rp)), max(max(Rp)) ) ;
 
